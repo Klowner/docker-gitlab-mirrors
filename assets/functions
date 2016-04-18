@@ -1,0 +1,98 @@
+#!/bin/bash
+set -e
+source ${GITLAB_MIRROR_ASSETS}/env-defaults
+
+check_environment() {
+	if [[ -z $GITLAB_MIRROR_GITLAB_URL ]]; then
+		echo "GITLAB_MIRROR_GITLAB_URL must be specified"
+		exit
+	fi
+}
+
+update_template() {
+	local FILE=${1?missing argument}
+	shift
+
+	[[ ! -f ${FILE} ]] && return 1
+
+	local VARIABLES=($@)
+	local USR=$(stat -c %U ${FILE})
+	local tmp_file=$(mktemp)
+	cp -a "${FILE}" ${tmp_file}
+
+	local variable
+	for variable in ${VARIABLES[@]}; do
+		sed -ri "s/[{]{2}$variable[}]{2}/\${$variable}/g" ${tmp_file}
+	done
+
+	# Replace placeholders
+	(
+		export ${VARIABLES[@]}
+		local IFS=":"; sudo -HEu ${USR} envsubst "${VARIABLES[*]/#/$}" < ${tmp_file} > ${FILE}
+	)
+	rm -rf ${tmp_file}
+}
+
+install_template() {
+	local OWNERSHIP=${1}
+	local SRC=${2}
+	local DEST=${3}
+	local MODE=${4:-0644}
+
+	cp "${GITLAB_MIRROR_ASSETS}/${SRC}" "${DEST}"
+	chmod ${MODE} ${DEST}
+	chown ${OWNERSHIP} ${DEST}
+}
+
+add_user() {
+	if [[ "${GITLAB_MIRROR_USER}" != 'root' ]]; then
+		adduser -D -s /bin/bash -h ${GITLAB_MIRROR_HOME} -u ${GITLAB_MIRROR_UID} ${GITLAB_MIRROR_USER}
+	fi
+}
+
+exec_as_user() {
+	if [[ $(whoami) == "${GITLAB_MIRROR_USER}" ]]; then
+		${@:1}
+	else
+		echo "exec ${GITLAB_MIRROR_USER} ${@:1} $(whoami)"
+		sudo -HEu ${GITLAB_MIRROR_USER} ${@:1}
+	fi
+}
+
+fix_home_permissions() {
+	if [[ "${GITLAB_MIRROR_USER}" != "root" ]]; then
+		mkdir -p ${GITLAB_MIRROR_HOME}/.ssh
+		chmod 700 ${GITLAB_MIRROR_HOME}/.ssh
+		chown ${GITLAB_MIRROR_USER} ${GITLAB_MIRROR_HOME}
+		chown ${GITLAB_MIRROR_USER} ${GITLAB_MIRROR_HOME}/.ssh
+		chown -R ${GITLAB_MIRROR_USER} ${GITLAB_MIRROR_REPO_DIR}
+		chown -R ${GITLAB_MIRROR_USER} ${GITLAB_MIRROR_INSTALL_DIR}
+	fi
+}
+
+configure_gitlab_mirror() {
+
+	update_template "${GITLAB_MIRROR_ASSETS}/config.sh.tmpl" \
+		GITLAB_MIRROR_USER \
+		GITLAB_MIRROR_HOME \
+		GITLAB_MIRROR_REPO_DIR \
+		GITLAB_MIRROR_COLORS \
+		GITLAB_MIRROR_SVN_OPTIONS \
+		GITLAB_MIRROR_NO_CREATE_SET \
+		GITLAB_MIRROR_NO_REMOTE_SET \
+		GITLAB_MIRROR_FORCE_UPDATE \
+		GITLAB_MIRROR_PRUNE_MIRRORS \
+		GITLAB_MIRROR_GITLAB_NAMESPACE \
+		GITLAB_MIRROR_GITLAB_URL \
+		GITLAB_MIRROR_GITLAB_USER \
+		GITLAB_MIRROR_SSL_VERIFY \
+		GITLAB_MIRROR_HTTP_REMOTE \
+		GITLAB_MIRROR_NEW_ISSUES_ENABLED \
+		GITLAB_MIRROR_NEW_WALL_ENABLED \
+		GITLAB_MIRROR_NEW_WIKI_ENABLED \
+		GITLAB_MIRROR_NEW_SNIPPETS_ENABLED \
+		GITLAB_MIRROR_NEW_MERGE_REQUESTS_ENABLED \
+		GITLAB_MIRROR_NEW_PUBLIC
+
+	install_template ${GITLAB_MIRROR_USER} "config.sh.tmpl" "${GITLAB_MIRROR_INSTALL_DIR}/config.sh" 0755
+}
