@@ -31,10 +31,10 @@ case ${1} in
 				echo "Populated /config volume, please add ssh keys and configuration"
 				;;
 			check-ssh)
-				echo "Testing SSH..."
 				exec_as_user ssh ${@:2}
+				;;
 			run)
-				exec "${@:2}"
+				exec_as_user "${@:2}"
 				;;
 		esac
 		;;
