@@ -30,9 +30,6 @@ case ${1} in
 			config)
 				echo "Populated /config volume, please add ssh keys and configuration"
 				;;
-			check-ssh)
-				exec_as_user ssh ${@:2}
-				;;
 			run)
 				exec_as_user "${@:2}"
 				;;
@@ -46,7 +43,6 @@ case ${1} in
 		echo " ls              - List registered mirrors"
 		echo " update          - Update all registered mirrors"
 		echo " config          - Populate the /config volume with ~/.ssh and other things"
-		echo " ssh             - Run SSH as gitlab-mirrors user (useful for testing keys setup)"
 		;;
 	*)
 		exec "$@"

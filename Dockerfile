@@ -37,6 +37,8 @@ RUN git clone --depth 1 https://github.com/alexvh/python-gitlab3.git \
 WORKDIR /
 RUN git clone --depth 1 https://github.com/samrocketman/gitlab-mirrors.git ${GITLAB_MIRROR_INSTALL_DIR}
 
+RUN echo 'env_keep+=SSH_AUTH_SOCK' >> /etc/visudo
+
 COPY assets ${GITLAB_MIRROR_ASSETS}
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh

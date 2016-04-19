@@ -54,7 +54,7 @@ exec_as_user() {
 	if [[ $(whoami) == "${GITLAB_MIRROR_USER}" ]]; then
 		${@:1}
 	else
-		sudo -HEu ${GITLAB_MIRROR_USER} ${@:1}
+		sudo -HEu ${GITLAB_MIRROR_USER} -- bash -c "source .bashrc; ${*:1}"
 	fi
 }
 
@@ -62,6 +62,12 @@ fix_home_permissions() {
 	if [[ "${GITLAB_MIRROR_USER}" != "root" ]]; then
 		mkdir -p ${GITLAB_MIRROR_HOME}/.ssh
 		chmod 700 ${GITLAB_MIRROR_HOME}/.ssh
+
+		if [[ ! -f ${GITLAB_MIRROR_HOME}/.bashrc ]]; then
+			touch ${GITLAB_MIRROR_HOME}/.bashrc
+			chown ${GITLAB_MIRROR_USER}:${GITLAB_MIRROR_USER} ${GITLAB_MIRROR_HOME}/.bashrc
+		fi
+
 		chown ${GITLAB_MIRROR_USER} ${GITLAB_MIRROR_HOME}
 		chown ${GITLAB_MIRROR_USER} ${GITLAB_MIRROR_HOME}/.ssh
 		chown -R ${GITLAB_MIRROR_USER} ${GITLAB_MIRROR_REPO_DIR}
