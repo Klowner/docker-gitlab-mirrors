@@ -54,7 +54,6 @@ exec_as_user() {
 	if [[ $(whoami) == "${GITLAB_MIRROR_USER}" ]]; then
 		${@:1}
 	else
-		echo "exec ${GITLAB_MIRROR_USER} ${@:1} $(whoami)"
 		sudo -HEu ${GITLAB_MIRROR_USER} ${@:1}
 	fi
 }
