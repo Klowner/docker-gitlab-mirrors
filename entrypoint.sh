@@ -7,7 +7,7 @@ add_user
 fix_home_permissions
 
 case ${1} in
-	mirrors|add|delete|ls|update|config|run)
+	mirrors|add|delete|ls|update|config|run|check-ssh)
 		check_environment
 		configure_gitlab_mirror
 
@@ -30,6 +30,9 @@ case ${1} in
 			config)
 				echo "Populated /config volume, please add ssh keys and configuration"
 				;;
+			check-ssh)
+				echo "Testing SSH..."
+				exec_as_user ssh ${@:2}
 			run)
 				exec "${@:2}"
 				;;
@@ -38,10 +41,12 @@ case ${1} in
 	help)
 		echo "Available options:"
 		echo " git-mirrors"
-		echo " add "
-		echo " delete"
-		echo " ls"
-		echo " update"
+		echo " add             - Add a new mirror"
+		echo " delete          - Delete a mirror"
+		echo " ls              - List registered mirrors"
+		echo " update          - Update all registered mirrors"
+		echo " config          - Populate the /config volume with ~/.ssh and other things"
+		echo " ssh             - Run SSH as gitlab-mirrors user (useful for testing keys setup)"
 		;;
 	*)
 		exec "$@"
