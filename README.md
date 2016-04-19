@@ -10,6 +10,21 @@ Automated builds are available from [quay.io](https://quay.io)
 ```bash
 docker pull quay.io/klowner/gitlab-mirrors:latest
 ```
+The `/config` volume serves as the `$HOME` for the container's user. A few files are required for this container to work.
+- `/config/.ssh/config`: any custom ssh configuration you need when connecting to the GitLab serer
+- `/config/.ssh/id_rsa`: an SSH private key associated with the GitLab user that will be pushing mirrors
+- `/config/private_token`: The private API token for the GitLab user, this can be obtained in your GitLab user profile in the web UI.
+- `/config/.bashrc`: *optional* add any pre-init for commands, such as starting `ssh-agent` or adding ssh keys
+> You can initialize the `/config` volume by running the container with the `config` command.
+
+Test your configuration to verify that SSH keys and SSH configuration is correct
+```bash
+docker run --rm -it \
+  -v ${PWD}:/config:/config \
+  quay.io/klowner/gitlab-mirrors:latest \
+  run ssh git.example.com
+```
+
 Add a repo to mirror (this example shows mirroring the pcre2 library)
 ```bash
 docker run --rm -it \
@@ -17,12 +32,12 @@ docker run --rm -it \
   -v ${PWD}:/mirrors:/data/mirrors \
   -e GITLAB_MIRROR_GITLAB_USER=mark \
   -e GITLAB_MIRROR_GITLAB_NAMESPACE=Mirrors \
-  -e GITLAB_MIRROR_GITLAB_URL=http://git.klowner.com \
+  -e GITLAB_MIRROR_GITLAB_URL=http://git.example.com \
   -e GITLAB_MIRROR_SVN_OPTIONS='-r500:HEAD -T code/trunk/ -t code/tags/' \
   quay.io/klowner/gitlab-mirrors:latest \
   add --svn --project-name pcre2 --mirror svn://vcs.exim.org/pcre2
 ```
-If all goes well, this will mirror `svn://vcs.exim.org/pcre2` to `http://git.klowner.com/Mirrors/pcre2`.
+If all goes well, this will mirror `svn://vcs.exim.org/pcre2` to `http://git.example.com/Mirrors/pcre2`.
 
 I recommend making a short script such as this for running updates, etc. This example also exposes ssh-agent to the container for convenience.
 ```bash
