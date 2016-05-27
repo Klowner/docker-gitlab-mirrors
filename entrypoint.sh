@@ -37,12 +37,12 @@ case ${1} in
 		;;
 	help)
 		echo "Available options:"
-		echo " git-mirrors"
-		echo " add             - Add a new mirror"
-		echo " delete          - Delete a mirror"
-		echo " ls              - List registered mirrors"
-		echo " update          - Update all registered mirrors"
-		echo " config          - Populate the /config volume with ~/.ssh and other things"
+		echo " mirrors           - Update all mirrors"
+		echo " add               - Add a new mirror"
+		echo " delete            - Delete a mirror"
+		echo " ls                - List registered mirrors"
+		echo " update <project>  - Update a single mirror"
+		echo " config            - Populate the /config volume with ~/.ssh and other things"
 		;;
 	*)
 		exec "$@"
