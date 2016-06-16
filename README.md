@@ -11,7 +11,7 @@ Automated builds are available from [quay.io](https://quay.io)
 docker pull quay.io/klowner/gitlab-mirrors:latest
 ```
 The `/config` volume serves as the `$HOME` for the container's user. A few files are required for this container to work.
-- `/config/.ssh/config`: any custom ssh configuration you need when connecting to the GitLab serer
+- `/config/.ssh/config`: any custom ssh configuration you need when connecting to the GitLab server. (See the ssh/config example further down the page).
 - `/config/.ssh/id_rsa`: an SSH private key associated with the GitLab user that will be pushing mirrors
 - `/config/private_token`: The private API token for the GitLab user, this can be obtained in your GitLab user profile in the web UI.
 - `/config/.bashrc`: *optional* add any pre-init for commands, such as starting `ssh-agent` or adding ssh keys.
@@ -132,3 +132,18 @@ Available options:
  config            - Populate the /config volume with ~/.ssh and other things
  run <command>     - Run an arbitrary command inside the container
 ```
+Run some commands!
+
+## Example .ssh/config
+After running `config` your `/config` volume will be populated with some starter files. You can provide additional configuration settings by customizing the `/data/.ssh/config`. Here's something similar to what I use, you should be able to adapt it to your needs.
+```
+Host gitlab.example.com
+  Hostname gitlab
+  User git
+  ForwardAgent yes
+  StrictHostKeyChecking no
+  IdentityFile ~/.ssh/id_rsa_for_mirror_user
+```
+If everything is set up properly, you can use the container's `run` command to try connecting to your gitlab server via ssh. eg.
+`docker-compose run --rm gitlab-mirrors run ssh gitlab.example.com`
+If all goes well, you should get a `"Welcome to GitLab, <your user>!"` repsonse.
