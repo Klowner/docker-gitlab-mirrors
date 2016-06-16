@@ -28,8 +28,8 @@ docker run --rm -it \
 Add a repo to mirror (this example shows mirroring the pcre2 library)
 ```bash
 docker run --rm -it \
-  -v ${PWD}:/config:/config \
-  -v ${PWD}:/mirrors:/data/mirrors \
+  -v "${PWD}/config:/config" \
+  -v "${PWD}/mirrors:/data/mirrors" \
   -e GITLAB_MIRROR_GITLAB_USER=mark \
   -e GITLAB_MIRROR_GITLAB_NAMESPACE=Mirrors \
   -e GITLAB_MIRROR_GITLAB_URL=http://git.example.com \
@@ -44,8 +44,8 @@ I recommend making a short script such as this for running updates, etc. This ex
 # gitlab-mirror.sh
 docker run --rm -it \
   -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
-  -v ${PWD}:/config:/config \
-  -v ${PWD}:/mirrors:/data/Mirrors \
+  -v "${PWD}/config:/config" \
+  -v "${PWD}/mirrors:/data/Mirrors" \
   -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
   -e GITLAB_MIRROR_GITLAB_UID=$(id -u) \
   -e GITLAB_MIRROR_GITLAB_USER=mark \
