@@ -43,6 +43,7 @@ case ${1} in
 		echo " ls                - List registered mirrors"
 		echo " update <project>  - Update a single mirror"
 		echo " config            - Populate the /config volume with ~/.ssh and other things"
+		echo " run <command>     - Run an arbitrary command inside the container"
 		;;
 	*)
 		exec "$@"
