@@ -14,7 +14,8 @@ The `/config` volume serves as the `$HOME` for the container's user. A few files
 - `/config/.ssh/config`: any custom ssh configuration you need when connecting to the GitLab serer
 - `/config/.ssh/id_rsa`: an SSH private key associated with the GitLab user that will be pushing mirrors
 - `/config/private_token`: The private API token for the GitLab user, this can be obtained in your GitLab user profile in the web UI.
-- `/config/.bashrc`: *optional* add any pre-init for commands, such as starting `ssh-agent` or adding ssh keys
+- `/config/.bashrc`: *optional* add any pre-init for commands, such as starting `ssh-agent` or adding ssh keys.
+
 > You can initialize the `/config` volume by running the container with the `config` command.
 
 Test your configuration to verify that SSH keys and SSH configuration is correct
@@ -85,3 +86,49 @@ Then you can
 - **GITLAB_MIRROR_NEW_SNIPPETS_ENABLED:** (default: false)
 - **GITLAB_MIRROR_NEW_MERGE_REQUESTS_ENABLED:** (default: false)
 - **GITLAB_MIRROR_NEW_PUBLIC:** (default: false)
+
+
+## Example configuration using docker-compose
+Here's an example `docker-compose.yml` to simplify interacting with *docker-gitlab-mirrors*.
+```
+version: '2'
+
+services:
+  gitlab-mirrors:
+    image: quay.io/klowner/gitlab-mirrors:latest
+    volumes:
+      - /srv/gitlab-mirrors/config:/config
+      - /srv/gitlab-mirrors/data:/data
+    environment:
+      - GITLAB_MIRROR_GITLAB_UID=1000
+      - GITLAB_MIRROR_GITLAB_USER=mark
+      - GITLAB_MIRROR_GITLAB_NAMESPACE=mirrors
+      - GITLAB_MIRROR_GITLAB_URL=http://gitlab
+    external_links:
+      - gitlab:gitlab
+    networks:
+      - gitlab_front
+
+networks:
+  gitlab_front:
+    external:
+      name: gitlab_front
+```
+- My `/config` and `/data` volumes are stored on the docker host's `/srv/gitlab-mirrors` directory.
+- The `external_links` specifies the name of my running `gitlab` container, this matches the `GITLAB_MIRROR_GITLAB_URL=http://gitlab`.
+- `gitlab_front` is a named Docker network, this is added so the `docker-gitlab-mirrors` container can connect to the `gitlab` container.
+
+Using the above example, you can run the container via `docker-compose` without the necessity to provide configuration options repeatedly.
+
+From the directory containing your `docker-compose.yml`
+```
+# docker-compose run --rm gitlab-mirrors
+Available options:
+ mirrors           - Update all mirrors
+ add               - Add a new mirror
+ delete            - Delete a mirror
+ ls                - List registered mirrors
+ update <project>  - Update a single mirror
+ config            - Populate the /config volume with ~/.ssh and other things
+ run <command>     - Run an arbitrary command inside the container
+```
