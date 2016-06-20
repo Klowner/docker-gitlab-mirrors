@@ -21,7 +21,7 @@ The `/config` volume serves as the `$HOME` for the container's user. A few files
 Test your configuration to verify that SSH keys and SSH configuration is correct
 ```bash
 docker run --rm -it \
-  -v ${PWD}:/config:/config \
+  -v ${PWD}/config:/config \
   quay.io/klowner/gitlab-mirrors:latest \
   run ssh git.example.com
 ```
