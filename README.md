@@ -43,7 +43,7 @@ If all goes well, this will mirror `svn://vcs.exim.org/pcre2` to `http://git.exa
 I recommend making a short script such as this for running updates, etc. This example also exposes ssh-agent to the container for convenience.
 ```bash
 # gitlab-mirror.sh
-docker run --rm -it \
+docker run --rm -i \
   -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
   -v "${PWD}/config:/config" \
   -v "${PWD}/mirrors:/data/Mirrors" \
@@ -54,18 +54,18 @@ docker run --rm -it \
   -e GITLAB_MIRROR_GITLAB_URL=http://git.klowner.com \
   quay.io/klowner/gitlab-mirrors:latest ${@:1}
 ```
-Then you can 
+Then you can
 ```bash
 ./gitlab-mirror.sh update
 ```
-  
+
 ## Configuration Options
 #### Required parameters
 - **GITLAB_MIRROR_GITLAB_NAMESPACE:** GitLab namespace that mirrors will be pushed to (default: `'Mirrors'`)
 - **GITLAB_MIRROR_GITLAB_USER:** GitLab username to use for pushing to gitlab (default: `git`)
 - **GITLAB_MIRROR_GITLAB_URL:** http(s) URL of the GitLab server you'll be pushing mirrors to
 
-#### Optional parameters 
+#### Optional parameters
 - **GITLAB_MIRROR_USER:** the system user that gitlab-mirrors will run as inside the container (default: `git`)
 - **GITLAB_MIRROR_UID:** the userid to use for the system user above (default: `1000`)
 - **GITLAB_MIRROR_HOME:** location of system user's home volume, this contains the gitlab `private_token` and `~/.ssh` (default: `/config`)
