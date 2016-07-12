@@ -135,7 +135,7 @@ Available options:
 Run some commands!
 
 ## Example .ssh/config
-After running `config` your `/config` volume will be populated with some starter files. You can provide additional configuration settings by customizing the `/data/.ssh/config`. Here's something similar to what I use, you should be able to adapt it to your needs.
+After running `config` your `/config` volume will be populated with some starter files. You can provide additional configuration settings by customizing the `/config/.ssh/config`. Here's something similar to what I use, you should be able to adapt it to your needs.
 ```
 Host gitlab.example.com
   Hostname gitlab
