@@ -48,7 +48,7 @@ docker run --rm -i \
   -v "${PWD}/config:/config" \
   -v "${PWD}/mirrors:/data/Mirrors" \
   -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
-  -e GITLAB_MIRROR_GITLAB_UID=$(id -u) \
+  -e GITLAB_MIRROR_UID=$(id -u) \
   -e GITLAB_MIRROR_GITLAB_USER=mark \
   -e GITLAB_MIRROR_GITLAB_NAMESPACE=Mirrors \
   -e GITLAB_MIRROR_GITLAB_URL=http://git.klowner.com \
@@ -100,7 +100,7 @@ services:
       - /srv/gitlab-mirrors/config:/config
       - /srv/gitlab-mirrors/data:/data
     environment:
-      - GITLAB_MIRROR_GITLAB_UID=1000
+      - GITLAB_MIRROR_UID=1000
       - GITLAB_MIRROR_GITLAB_USER=mark
       - GITLAB_MIRROR_GITLAB_NAMESPACE=mirrors
       - GITLAB_MIRROR_GITLAB_URL=http://gitlab
