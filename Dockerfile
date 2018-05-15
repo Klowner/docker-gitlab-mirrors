@@ -9,7 +9,7 @@ ENV GITLAB_MIRROR_ASSETS=/assets \
 	GITLAB_MIRROR_VERSION=0.5.3
 
 RUN apk update \
-	&& apk add bash git gettext git-svn bzr mercurial python py2-pip openssl \
+	&& apk add bash git git-fast-import gettext git-svn bzr mercurial python py2-pip openssl \
 		sudo perl-git openssh-client \
 	&& rm -rf /var/cache/apk/*
 
@@ -23,7 +23,6 @@ RUN wget https://raw.github.com/felipec/git-remote-hg/master/git-remote-hg -O /u
 
 # python-gitlab
 RUN pip install python-gitlab
-
 
 WORKDIR /
 RUN git clone --depth 1 https://github.com/samrocketman/gitlab-mirrors.git -b development ${GITLAB_MIRROR_INSTALL_DIR}
