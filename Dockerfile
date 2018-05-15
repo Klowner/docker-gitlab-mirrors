@@ -9,7 +9,7 @@ ENV GITLAB_MIRROR_ASSETS=/assets \
 	GITLAB_MIRROR_VERSION=0.5.3
 
 RUN apk update \
-	&& apk add bash git gettext git-svn bzr mercurial python py-setuptools openssl \
+	&& apk add bash git gettext git-svn bzr mercurial python py2-pip openssl \
 		sudo perl-git openssh-client \
 	&& rm -rf /var/cache/apk/*
 
@@ -21,22 +21,12 @@ RUN wget https://raw.github.com/felipec/git-remote-bzr/master/git-remote-bzr -O 
 RUN wget https://raw.github.com/felipec/git-remote-hg/master/git-remote-hg -O /usr/local/bin/git-remote-hg \
 	&& chmod 755 /usr/local/bin/git-remote-hg
 
-# python-requests
-WORKDIR /tmp
-RUN git clone --depth 1 https://github.com/kennethreitz/requests.git \
-	&& cd requests \
-	&& python setup.py install \
-	&& cd .. && rm -rf requests
+# python-gitlab
+RUN pip install python-gitlab
 
-# python-gitlab3
-WORKDIR /tmp
-RUN git clone --depth 1 https://github.com/alexvh/python-gitlab3.git \
-	&& cd python-gitlab3 \
-	&& python setup.py install \
-	&& cd .. && rm -rf python-gitlab3
 
 WORKDIR /
-RUN git clone --depth 1 https://github.com/samrocketman/gitlab-mirrors.git ${GITLAB_MIRROR_INSTALL_DIR}
+RUN git clone --depth 1 https://github.com/samrocketman/gitlab-mirrors.git -b development ${GITLAB_MIRROR_INSTALL_DIR}
 
 RUN echo 'env_keep+=SSH_AUTH_SOCK' >> /etc/visudo
 
