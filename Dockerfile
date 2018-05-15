@@ -6,7 +6,7 @@ ENV GITLAB_MIRROR_ASSETS=/assets \
 	GITLAB_MIRROR_HOME=/config \
 	GITLAB_MIRROR_INSTALL_DIR=/opt/gitlab-mirror \
 	GITLAB_MIRROR_REPO_DIR=/data \
-	GITLAB_MIRROR_VERSION=0.5.3
+	GITLAB_MIRROR_VERSION=0.5.4pre
 
 RUN apk update \
 	&& apk add bash git git-fast-import gettext git-svn bzr mercurial python py2-pip openssl \
