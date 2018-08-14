@@ -6,10 +6,10 @@ ENV GITLAB_MIRROR_ASSETS=/assets \
 	GITLAB_MIRROR_HOME=/config \
 	GITLAB_MIRROR_INSTALL_DIR=/opt/gitlab-mirror \
 	GITLAB_MIRROR_REPO_DIR=/data \
-	GITLAB_MIRROR_VERSION=0.5.3
+	GITLAB_MIRROR_VERSION=0.6.0
 
 RUN apk update \
-	&& apk add bash git gettext git-svn bzr mercurial python py-setuptools openssl \
+	&& apk add bash git gettext git-svn bzr mercurial python py-setuptools libressl \
 		sudo perl-git openssh-client \
 	&& rm -rf /var/cache/apk/*
 
@@ -36,7 +36,17 @@ RUN git clone --depth 1 https://github.com/alexvh/python-gitlab3.git \
 	&& cd .. && rm -rf python-gitlab3
 
 WORKDIR /
-RUN git clone --depth 1 https://github.com/samrocketman/gitlab-mirrors.git ${GITLAB_MIRROR_INSTALL_DIR}
+
+# gitlab-mirrors scripts
+# Specific release:
+RUN mkdir -p "${GITLAB_MIRROR_INSTALL_DIR}" && \
+	wget https://github.com/samrocketman/gitlab-mirrors/archive/v${GITLAB_MIRROR_VERSION}.tar.gz -O - | \
+		tar xz --strip 1 --directory "${GITLAB_MIRROR_INSTALL_DIR}"
+
+# - OR -
+
+# Latest git version
+#RUN git clone --depth 1 https://github.com/samrocketman/gitlab-mirrors.git ${GITLAB_MIRROR_INSTALL_DIR}
 
 RUN echo 'env_keep+=SSH_AUTH_SOCK' >> /etc/visudo
 
