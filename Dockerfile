@@ -9,7 +9,7 @@ ENV GITLAB_MIRROR_ASSETS=/assets \
 	GITLAB_MIRROR_VERSION=0.6.0
 
 RUN apk update \
-	&& apk add bash git gettext git-svn bzr mercurial python py-setuptools libressl \
+	&& apk add bash git gettext git-svn bzr mercurial python2 py-setuptools py2-pip libressl \
 		sudo perl-git openssh-client \
 	&& rm -rf /var/cache/apk/*
 
