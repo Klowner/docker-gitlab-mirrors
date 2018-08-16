@@ -28,12 +28,9 @@ RUN git clone --depth 1 https://github.com/kennethreitz/requests.git \
 	&& python setup.py install \
 	&& cd .. && rm -rf requests
 
-# python-gitlab3
-WORKDIR /tmp
-RUN git clone --depth 1 https://github.com/alexvh/python-gitlab3.git \
-	&& cd python-gitlab3 \
-	&& python setup.py install \
-	&& cd .. && rm -rf python-gitlab3
+# python-gitlab
+RUN pip install python-gitlab
+
 
 WORKDIR /
 
