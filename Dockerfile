@@ -6,7 +6,7 @@ ENV GITLAB_MIRROR_ASSETS=/assets \
 	GITLAB_MIRROR_HOME=/config \
 	GITLAB_MIRROR_INSTALL_DIR=/opt/gitlab-mirror \
 	GITLAB_MIRROR_REPO_DIR=/data \
-	GITLAB_MIRROR_VERSION=0.6.0
+	GITLAB_MIRROR_VERSION=0.6.1
 
 RUN apk update \
 	&& apk add bash git gettext git-svn bzr mercurial python2 py-setuptools py2-pip libressl \
@@ -22,7 +22,7 @@ RUN wget https://raw.github.com/felipec/git-remote-hg/master/git-remote-hg -O /u
 	&& chmod 755 /usr/local/bin/git-remote-hg
 
 # python-gitlab
-RUN pip install python-gitlab==1.4
+RUN pip install python-gitlab==1.5.1
 
 
 WORKDIR /
